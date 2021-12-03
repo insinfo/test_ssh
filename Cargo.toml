@@ -1,0 +1,22 @@
+[package]
+name = "test_ssh"
+version = "0.1.0"
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+#ssh2 = "0.9"
+ssh2 = { path = "../ssh2-rs" }
+
+libssh2-sys = { path = "../ssh2-rs/libssh2-sys", version = "0.2.23" }
+libc = "0.2"
+
+ssh = "0.1.4"
+
+#https://nnethercote.github.io/perf-book/build-configuration.html
+[profile.release]
+lto = true
+codegen-units = 1
+#$Env:RUSTFLAGS = "-C target-cpu=native"
+# cargo build --release
