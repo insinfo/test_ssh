@@ -27,7 +27,10 @@ pub fn run() {
 
     let start = std::time::Instant::now();
     for item in items_to_download.iter() {
-        download_item(&item, &sess, dir_to_download, dest_dir_path, None);
+        //remove a parte inicial do caminho
+        let mut name = PathBuf::from(&item.path.strip_prefix(&dir_to_download).unwrap());
+        name = dest_dir_path.join(name);
+        download_item(&item, &sess,  &name, None);
     }
     println!("Time elapsed in file transfer: {:?}", start.elapsed());
 
@@ -81,15 +84,13 @@ fn list_dir(path: &Path, sess: &Session) -> Vec<FsEntry> {
     return entries;
 }
 
-fn download_item(entry: &FsEntry, sess: &Session, dir_to_download: &Path, local_path: &Path, _dst_name: Option<&str>) {
+fn download_item(entry: &FsEntry, sess: &Session,  dst_path: &Path, _dst_name: Option<&str>) {
     /*let local_file_name = match dst_name {
         Some(n) => n,
         None => entry.path.file_name().unwrap().to_str().unwrap()
     };*/
     let path = &entry.path;
-    //remove a parte inicial do caminho
-    let mut name = PathBuf::from(path.strip_prefix(&dir_to_download).unwrap());
-    name = local_path.join(name);
+
 
     //println!(" file name: {}", name.display());
     //println!("file name: {}", local_file_name);
@@ -101,7 +102,7 @@ fn download_item(entry: &FsEntry, sess: &Session, dir_to_download: &Path, local_
                 .write(true)
                 .truncate(true)
                 .open(&name).unwrap();*/
-            let mut dest_file = std::fs::File::create(&name).unwrap();
+            let mut dest_file = std::fs::File::create(&dst_path).unwrap();
 
             //const CAP: usize = 8192;//8192;//1024 * 128;//4000000*8;
             //let mut writer = std::io::BufWriter::with_capacity(CAP, file);
@@ -134,8 +135,8 @@ fn download_item(entry: &FsEntry, sess: &Session, dir_to_download: &Path, local_
             //std::io::copy(&mut channel, &mut writer).unwrap();
         }
     } else if entry.file_type == FsEntryType::Directory {
-        std::fs::create_dir_all(&name)
-            .expect(format!("Failed to create directory: {:?}", &name).as_str());
+        std::fs::create_dir_all(&dst_path)
+            .expect(format!("Failed to create directory: {:?}", &dst_path).as_str());
     }
 }
 

@@ -7,7 +7,7 @@ use std::os::unix::io::{AsRawFd, RawFd};
 #[cfg(windows)]
 use std::os::windows::io::{AsRawSocket, RawSocket};
 
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::{io, slice};
 use std::io::Write;
 use std::str;
@@ -18,17 +18,30 @@ extern crate libssh2_sys as raw;
 
 use libc::{self, c_char, c_int, c_long, c_uint, c_void, size_t};
 use libssh2_sys::*;
+use test_ssh::{FsEntry, FsEntryType};
 
 use test_ssh::utils::{make_error_message, path2bytes, print_error};
 
-//static mut session: *mut raw::LIBSSH2_SESSION = std::ptr::null_mut();
-//static mut channel_g: *mut raw::LIBSSH2_CHANNEL = std::ptr::null_mut();
 
 pub fn run() {
     let mut ssh = Libssh2::new().unwrap();
     let tcp = TcpStream::connect("192.168.133.13:22").unwrap();
     ssh.connect(tcp, "isaque.neves", "Ins257257");
 
+    let dir_to_download = Path::new("/etc/apache2");
+    let dest_dir_path = Path::new(r"C:\MyRustProjects\test_ssh\download");
+    std::fs::create_dir_all(&dest_dir_path).unwrap();
+
+    let item = FsEntry{
+        path: PathBuf::from("/etc/apache2/apache2.conf"),
+        file_type: FsEntryType::File,
+        is_link: false
+    };
+
+    let mut dst_path = PathBuf::from(&item.path.strip_prefix(&dir_to_download).unwrap());
+    dst_path = dest_dir_path.join(dst_path);
+    println!("dst_path {:?}",dst_path);
+    ssh.download_item(&item,&dst_path);
 
     ssh.disconnect();
 
@@ -82,9 +95,9 @@ impl Libssh2 {
         }
     }
 
-    fn download_item(&mut self, path: &Path) {
+    fn download_item(&mut self, entry: &FsEntry, dst_path: &Path) {
         unsafe {
-            let path = CString::new(path2bytes(path).unwrap()).unwrap();
+            let path = CString::new(path2bytes(&entry.path).unwrap()).unwrap();
             //#[allow(deprecated)]
             //std::mem::uninitialized()
             let mut fileinfo: libssh2_struct_stat = std::mem::zeroed();
@@ -95,6 +108,7 @@ impl Libssh2 {
                 print_error(self.session);
                 return;
             }
+            let mut dest_file = std::fs::File::create(&dst_path).unwrap();
 
             let mut got = 0;
             while got < fileinfo.st_size {
@@ -109,8 +123,8 @@ impl Libssh2 {
                 let rc = raw::libssh2_channel_read_ex(channel, 0, buffer.as_mut_ptr() as *mut _, amount as size_t) as i64;
 
                 if rc > 0 {
-                    let mut out_writer = Box::new(io::stdout()) as Box<dyn Write>;
-                    out_writer.write(&buffer[..rc as usize]).unwrap();
+                    //let mut out_writer = Box::new(io::stdout()) as Box<dyn Write>;
+                    dest_file.write(&buffer[..rc as usize]).unwrap();
                 } else if rc < 0 {
                     println!("libssh2_channel_read() failed: {}", rc);
                     print_error(self.session);
