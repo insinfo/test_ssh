@@ -2,8 +2,9 @@ use std::io::prelude::*;
 use std::net::{TcpStream};
 use ssh2::Session;
 use std::path::{Path, PathBuf};
-use test_ssh::{BUFFER_SIZE, FsEntry, FsEntryType};
+use test_ssh::{FsEntry, FsEntryType};
 
+const BUFFER_SIZE: usize = 128 * 1024;// 100 * 1024;
 
 pub fn run() {
     let dir_to_download = Path::new("/var/www/html/portalPmro");//
@@ -30,10 +31,9 @@ pub fn run() {
         //remove a parte inicial do caminho
         let mut name = PathBuf::from(&item.path.strip_prefix(&dir_to_download).unwrap());
         name = dest_dir_path.join(name);
-        download_item(&item, &sess,  &name, None);
+        download_item(&item, &sess, &name, None);
     }
     println!("Time elapsed in file transfer: {:?}", start.elapsed());
-
     println!("download of {:?} complete!", dir_to_download);
 }
 
@@ -84,7 +84,7 @@ fn list_dir(path: &Path, sess: &Session) -> Vec<FsEntry> {
     return entries;
 }
 
-fn download_item(entry: &FsEntry, sess: &Session,  dst_path: &Path, _dst_name: Option<&str>) {
+fn download_item(entry: &FsEntry, sess: &Session, dst_path: &Path, _dst_name: Option<&str>) {
     /*let local_file_name = match dst_name {
         Some(n) => n,
         None => entry.path.file_name().unwrap().to_str().unwrap()
@@ -110,7 +110,7 @@ fn download_item(entry: &FsEntry, sess: &Session,  dst_path: &Path, _dst_name: O
             //BUFFER_SIZE
             let mut buffer: [u8; BUFFER_SIZE] = unsafe {
                 #[allow(deprecated)]
-                std::mem::uninitialized()
+                    std::mem::uninitialized()
             };
             loop {
                 let num_read = src_file

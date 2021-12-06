@@ -6,6 +6,7 @@ use std::borrow::Cow;
 use std::fmt;
 use std::str;
 
+#[derive(Debug)]
 #[derive(PartialEq)]
 pub enum FsEntryType {
     File,
@@ -19,7 +20,14 @@ pub struct FsEntry {
     pub is_link: bool,
 }
 
-pub const BUFFER_SIZE: usize = 128 * 1024;// 100 * 1024;
+// Implement `Display` for `FsEntry`.
+impl fmt::Display for FsEntry {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "({}, {:?}, {})", self.path.display(), self.file_type, self.is_link)
+    }
+}
+
+
 
 /// An error code originating from a particular source.
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
