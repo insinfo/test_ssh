@@ -3,6 +3,7 @@
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/download" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/download/portalPmro" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/download/siscec2server" vcs="Git" />
   </component>
 </project>

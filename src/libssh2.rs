@@ -155,7 +155,6 @@ impl Libssh2 {
                 return Err(-1);
             }
 
-
             let c_str = CString::new("exec").unwrap();
             let req_type = c_str.as_ptr() as *const c_char;
             let req_type_len = "exec".len() as c_uint;

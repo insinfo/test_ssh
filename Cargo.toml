@@ -2,7 +2,7 @@
 name = "test_ssh"
 version = "0.1.0"
 edition = "2018"
-
+build = "build.rs"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
@@ -20,3 +20,11 @@ lto = true
 codegen-units = 1
 #$Env:RUSTFLAGS = "-C target-cpu=native"
 # cargo build --release
+
+#[target.i686-pc-windows-gnu.libsoundio]
+#rustc-link-search = ["libsoundio-1.1.0/i686"]
+#rustc-link-lib = [":libsoundio.a"]
+
+#[target.x86_64-pc-windows-gnu.libsoundio]
+#rustc-link-search = ["libsoundio-1.1.0/x86_64"]
+#rustc-link-lib = [":libsoundio.a"]
