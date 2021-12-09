@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+#![allow(unused_imports)]
 #![cfg_attr(debug_assertions, allow(dead_code, unused_imports, deprecated))]
 
 use std::ffi::CString;

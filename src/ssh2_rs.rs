@@ -1,3 +1,6 @@
+#![allow(dead_code)]
+#![allow(unused_imports)]
+
 use std::io::prelude::*;
 use std::net::{TcpStream};
 use ssh2::Session;

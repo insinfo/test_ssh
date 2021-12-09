@@ -14,6 +14,17 @@ libc = "0.2"
 
 ssh = "0.1.4"
 
+thrussh = "0.33.5" #pure rust SSH 2 implementation https://nest.pijul.com/pijul/thrussh
+thrussh-keys = "0.21.0" #Lide com chaves SSH: carregue-as, decifre-as, chame um agente SSH.
+
+futures = "0.3.18" #implementation of futures and streams featuring zero allocations, composability, and iterator-like interfaces.
+tokio = "1.14.0" #event-driven, non-blocking I/O platform for writing asynchronous I/O backed applications.
+log = "0.4.14"
+simplelog = "0.10.0" # A simple and easy-to-use logging facility for Rust's log crate
+env_logger = "0.8.4"
+anyhow = "1.0.51"
+dirs = "4.0.0"
+
 #https://nnethercote.github.io/perf-book/build-configuration.html
 [profile.release]
 lto = true

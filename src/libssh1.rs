@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use ssh::*;
 use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
@@ -96,11 +98,10 @@ impl Libssh1 {
 
         match scp.init() {
             Ok(..) => {}
-            Err(e) => { println!("error on init scp") }
+            Err(e) => { println!("error on init scp {}",e) }
         }
 
         let mut current_path = PathBuf::from(dst_path);
-
 
         loop {
             match scp.pull_request().unwrap() {
